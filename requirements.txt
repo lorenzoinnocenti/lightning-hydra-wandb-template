@@ -1,2 +1,6 @@
-# insert your 'production' requirements here
-numpy >= 1.21.0, < 2.0.0
+numpy
+lightning
+hydra-core
+wandb
+segmentation-models-pytorch
+rasterio

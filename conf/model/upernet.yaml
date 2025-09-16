@@ -1,0 +1,10 @@
+name : 'upernet'
+batch_size : 16 
+accumulate_batches : 8
+min_lr : 1e-4
+max_lr : 1e-2
+max_epochs: 500
+size: 256
+stride: 128
+test_padding: 128
+lr_schedule : 'exp'  # 'lin', 'exp'
