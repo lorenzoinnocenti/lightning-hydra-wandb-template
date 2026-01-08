@@ -24,7 +24,8 @@ class DataModule(li.LightningDataModule):
  
     def setup(self, stage):
         # TODO: implement setup for datasets
-        
+        raise NotImplementedError("Dataset setup not implemented yet.")
+    
     def train_dataloader(self):
         return DataLoader(
             self.train_dataset,

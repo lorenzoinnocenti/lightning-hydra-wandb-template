@@ -25,6 +25,10 @@ def query_params(validate: bool = True):
         while not (project_description := input("What is your project about? ")):
             print("Please enter a project description, or press Ctrl+C to exit.")
 
+        while not (telegram_id := input("What is your Telegram ID? ")):
+            print("Please enter your Telegram ID, or press Ctrl+C to exit.")
+            
+
         py_version = (
             input(f"What minimum version of Python do you want to use? (default: {DEFAULT_PY_VERSION}) ")
             or DEFAULT_PY_VERSION
@@ -37,10 +41,11 @@ def query_params(validate: bool = True):
             print(f" - Package name: {package_name}")
             print(f" - Project description: {project_description}")
             print(f" - Python version: {py_version}")
+            print(f" - Telegram ID: {telegram_id}")
             if input("Is this correct? (y/n) ").lower() != "y":
                 print("Alright, let's try again.")
                 continue
-        return name, email, project_name, package_name, project_description, py_version
+        return name, email, project_name, package_name, project_description, py_version, telegram_id
 
 
 def rename_package(project_name: str, root: str):
@@ -91,7 +96,7 @@ def main():
     try:
         print("Hi! Let's get started.")
         print("Please answer the following questions to help us get you set up.")
-        name, email, project_name, package_name, project_description, py_version = query_params()
+        name, email, project_name, package_name, project_description, py_version, telegram_id = query_params()
         data = update_toml_property(data, "name", f'"{project_name}"')
         data = update_toml_property(data, "description", f'"{project_description}"')
         data = update_toml_property(data, "requires-python", f'"{py_version}"')
@@ -100,6 +105,17 @@ def main():
 
         print("Updating license...")
         update_license(name)
+        
+        print("Updating jobs...")
+        # update all job files in the jobs/ folder replacing project_name and YOUR_TELEGRAM_ID
+        for job_file in os.listdir("jobs"):
+            job_path = os.path.join("jobs", job_file)
+            with open(job_path) as f:
+                job_data = f.read()
+            job_data = job_data.replace("project_name", project_name)
+            job_data = job_data.replace("YOUR_TELEGRAM_ID", telegram_id)
+            with open(job_path, "w") as f:
+                f.write(job_data)
 
         # storing the updated pyproject.toml
         print("Updating pyproject.toml...")
@@ -111,6 +127,15 @@ def main():
         rename_package(package_name, root="src")
         rename_package(package_name, root="tests")
         os.rename("src/project_name", f"src/{package_name}")
+        
+        # replace project_name in .vscode/launch.json
+        print("Updating VSCode launch configuration...")
+        launch_path = os.path.join(".vscode", "launch.json")
+        with open(launch_path) as f:
+            launch_data = f.read()
+        launch_data = launch_data.replace("project_name", package_name)
+        with open(launch_path, "w") as f:
+            f.write(launch_data)
 
         print("Your project is ready. Deleting myself from existence, farewell!")
         os.remove(__file__)

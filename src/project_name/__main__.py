@@ -4,12 +4,11 @@ import hydra
 from lightning.pytorch import Trainer
 from lightning.pytorch.tuner import Tuner
 from omegaconf import DictConfig
-from project_name.datasets.ermes_datamodule import ErmesDataModule
+from project_name.datasets.datamodule import DataModule
 from project_name.models.module import Module
 from project_name.utils import start_memory_daemon
 from lightning.pytorch.callbacks import ModelCheckpoint
 import torch
-from project_name.utils import cleanup
 from lightning.pytorch.loggers import WandbLogger
 
 
@@ -24,9 +23,9 @@ os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1'
 
 def train(cfg, jobid):
     wandb_dir = os.path.join('logs', jobid)
-    logger = WandbLogger(name=jobid, project='damage', save_dir=wandb_dir)
+    logger = WandbLogger(name=jobid, project='project_name', save_dir=wandb_dir)
     logger.experiment.config.update(dict(cfg))
-    datamodule = ErmesDataModule(
+    datamodule = DataModule(
         cfg.dataset,
         batch_size=cfg.model.batch_size,
         verbose=True
@@ -46,21 +45,21 @@ def train(cfg, jobid):
         # num_sanity_val_steps=1,
         # limit_train_batches=1,
         # limit_val_batches=1,
-        check_val_every_n_epoch=3,
+        # check_val_every_n_epoch=3,
+        gradient_clip_val=cfg.model.get('gradient_clip_val', 1.0),
         default_root_dir=f'logs/{jobid}',
     )
     trainer.fit(model, datamodule=datamodule)
     checkpoint_path = checkpoint_callback.best_model_path
-    model = Module.load_from_checkpoint(checkpoint_path, config=cfg['model'])
+    model = Module.load_from_checkpoint(checkpoint_path, config=cfg.model)
     trainer.test(model, datamodule=datamodule, ckpt_path=checkpoint_path)
-    cleanup(cfg)
 
 
 def test(cfg, jobid):
     wandb_dir = os.path.join('logs', jobid)
     logger = WandbLogger(name=jobid, project='damage', save_dir=wandb_dir)
     logger.experiment.config.update(dict(cfg))
-    datamodule = ErmesDataModule(
+    datamodule = DataModule(
         cfg.dataset,
         batch_size=cfg.model.batch_size,
         verbose=True
@@ -69,7 +68,7 @@ def test(cfg, jobid):
     checkpoint_path = f"logs/{jobid_to_be_tested}/checkpoints/best.ckpt"
     model = Module.load_from_checkpoint(checkpoint_path, config=cfg.model, jobid=jobid_to_be_tested)
     trainer = Trainer(logger=logger)
-    datamodule = ErmesDataModule(
+    datamodule = DataModule(
         cfg['dataset'],
         batch_size=cfg['model']['batch_size'],
         verbose=True
@@ -81,7 +80,7 @@ def lr_find(cfg, jobid):
     wandb_dir = os.path.join('logs', jobid)
     logger = WandbLogger(name=jobid, project='damage', save_dir=wandb_dir)    
     logger.experiment.config.update(dict(cfg))
-    datamodule = ErmesDataModule(
+    datamodule = DataModule(
         cfg.dataset,
         batch_size=cfg.model.batch_size,
         verbose=True
@@ -95,10 +94,10 @@ def lr_find(cfg, jobid):
     tuner = Tuner(trainer=trainer)
     lr_finder = tuner.lr_find(model,
                               datamodule=datamodule,
-                              min_lr=cfg['command']['min_lr'],
-                              max_lr=cfg['command']['max_lr'],
-                              early_stop_threshold=cfg['command']['es_threshold'],
-                              num_training=cfg['command']['num_training'],
+                              min_lr=cfg.command.min_lr,
+                              max_lr=cfg.command.max_lr,
+                              early_stop_threshold=cfg.command.es_threshold,
+                              num_training=cfg.command.num_training,
                               )
     fig = lr_finder.plot(suggest=True)
     fig.savefig(f'logs/{jobid}/lr_finder.png')

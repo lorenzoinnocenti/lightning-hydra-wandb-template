@@ -23,23 +23,18 @@ class Module(pl.LightningModule):
         jobid: str,
     ):
         super().__init__()
-        self.lr = config['min_lr']
+        self.lr = config.min_lr
         self.size = config['size']
         self.stride = config['stride']
         self.val_step_outputs = [] # needed for val_epoch_end to work
-        self.oem_batch_fetched = False
-        self.oem_batch = None
-        self.oem_loc_pred = None
-        self.oem_dam_pred = None
-        self.sysu_batch_fetched = False
-        self.sysu_batch = None
-        self.sysu_loc_pred = None
-        self.sysu_dam_pred = None
+        self.fetched_batch = False
+        self.fetched_pred = None
+        self.fetched = False
         self.config = config
         self.batch_size = config['batch_size']
         self.test_plot_count = 0
         self.val_in_cpu = True 
-        self.loss = # TODO: define loss function
+        # self.loss = # TODO: define loss function
         self.model = model_dict[config['name']]()
         self.threads = []
         self.jobid = jobid
@@ -50,10 +45,12 @@ class Module(pl.LightningModule):
 
     def training_step(self, batch: dict, batch_idx):
         # TODO: implement training step
+        raise NotImplementedError
         return loss
 
     def test_step(self, batch: dict, batch_idx):
         # TODO: implement test step
+        raise NotImplementedError
         self.log("test_loss", test_loss, on_step=False, on_epoch=True)
         thread = threading.Thread(
             target=self.plot, 
@@ -73,8 +70,10 @@ class Module(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         # TODO: implement validation step
+        raise NotImplementedError
         if not self.batch_fetched:
             # TODO: store one batch for plotting
+            pass
         self.log("val_loss", val_loss, on_step=False, on_epoch=True, batch_size=pre.size(0))
         return loss
 
@@ -159,6 +158,7 @@ class Module(pl.LightningModule):
 
     def plot(self, batch, loc_pred, dam_pred, plot_raster=False, plot_logger=False, epoch_number=None, suffix=None):
         # TODO: implement plotting function
+        raise NotImplementedError
         print("plot number ", epoch_number, " done")
             
     def overlapping_predictions(self, pre, post, size, stride, val_in_cpu=False, verbose=False):
