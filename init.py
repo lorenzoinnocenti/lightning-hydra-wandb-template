@@ -145,6 +145,10 @@ def main():
             with open(pyvenv_path, "w") as f:
                 f.write(pyvenv_data.replace("prompt = project-name", f"prompt = {project_name}"))
 
+        print("Updating .gitignore...")
+        with open(".gitignore", "a") as f:
+            f.write("\njobs/\n")
+
         print("Your project is ready. Deleting myself from existence, farewell!")
         os.remove(__file__)
 
