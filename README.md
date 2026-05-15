@@ -14,33 +14,28 @@ To use this template, follow these steps:
    git clone https://github.com/your-username/your-repo.git
    ```
 
-3. Navigate to the project directory. Optional but recommended: create and activate a Python virtual environment to isolate your project's dependencies.
-E.g.:
+3. Navigate to the project directory:
 
    ```bash
    cd your-repo
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows, use .venv\Scripts\activate
    ```
-5. The template provides a simple "self-destructing" initialization script, `init.py`, that automatically provides the necessary information to generate a fully functional python package (project name, author, ...).
-From a python environment, or any other means, this script can be launched as easily as:
 
-    ```bash
-    # launch and follow the prompts
-    python init.py
-    ```
-
-6. Install the required dependencies:
+4. The template provides a simple "self-destructing" initialization script, `init.py`, that automatically sets up the package name, author, and other metadata. Run it with:
 
    ```bash
-    # Install the bare minimum, editable is usually preferred when developing
-   pip install -e .
-   # Install extras
-   pip install -e .[dev,docs,test]
+   uv run python init.py
    ```
 
+5. Install the project and its dependencies:
 
-7. You're good to go! Of course, you can further customize it to your liking.
+   ```bash
+   # Bare minimum
+   uv sync
+   # With dev, docs, and test extras
+   uv sync --extra dev --extra docs --extra test
+   ```
+
+6. You're good to go! Of course, you can further customize it to your liking.
 
 > **Note**
 >

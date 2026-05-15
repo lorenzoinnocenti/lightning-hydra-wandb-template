@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "project-name"
@@ -13,38 +13,36 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
 ]
+dynamic = ["version"]
+dependencies = [
+    "numpy",
+    "lightning",
+    "hydra-core",
+    "wandb",
+    "segmentation-models-pytorch",
+    "rasterio",
+]
 
-# Dynamic metadata allow to assign the version number to the package at build time.
-# The location of the version number is specified in the [tool.setuptools.dynamic] section.
-dynamic = ["version", "dependencies"]
-
-# Optional dependencies, use this to include everything that the project needs to run in development.
-# These can be installed by specifying for instance `pip install -e .[dev|docs|test]`
-# Here the loose versioning policy is usually preferred.
 [project.optional-dependencies]
-# Add development dependencies here
 dev = [
     "gitchangelog >= 3.0.4, < 4.0.0",
     "ruff >= 0.5.0, < 1.0",
 ]
-# Add documentation dependencies here
 docs = [
     "mkdocs-material >= 9.5.0, < 10",
     "mdx-include >= 1.4.0, < 2",
 ]
-# Add testing dependencies here
 test = [
     "coverage >= 7.6.0, < 8",
     "pytest >= 8.3.0, < 9",
     "pytest-cov >= 5.0.0, < 6.0",
 ]
 
-[tool.setuptools]
-package-dir = { "" = "src" }
+[tool.hatch.version]
+path = "src/project_name/version.py"
 
-[tool.setuptools.dynamic]
-version = { attr = "package_name.__version__" }
-dependencies = {file = "requirements.txt"}
+[tool.hatch.build.targets.wheel]
+packages = ["src/project_name"]
 
 [tool.ruff]
 line-length = 119

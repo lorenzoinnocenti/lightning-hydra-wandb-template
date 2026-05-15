@@ -1,6 +1,0 @@
-numpy
-lightning
-hydra-core
-wandb
-segmentation-models-pytorch
-rasterio

@@ -101,7 +101,7 @@ def main():
         data = update_toml_property(data, "description", f'"{project_description}"')
         data = update_toml_property(data, "requires-python", f'"{py_version}"')
         data = update_toml_property(data, "authors", f'[{{name = "{name}", email = "{email}"}}]')
-        data = update_toml_property(data, "version", f'{{attr = "{package_name}.__version__"}}')
+        data = data.replace('path = "src/project_name/version.py"', f'path = "src/{package_name}/version.py"')
 
         print("Updating license...")
         update_license(name)
@@ -136,6 +136,14 @@ def main():
         launch_data = launch_data.replace("project_name", package_name)
         with open(launch_path, "w") as f:
             f.write(launch_data)
+
+        pyvenv_path = os.path.join(".venv", "pyvenv.cfg")
+        if os.path.exists(pyvenv_path):
+            print("Updating .venv/pyvenv.cfg...")
+            with open(pyvenv_path) as f:
+                pyvenv_data = f.read()
+            with open(pyvenv_path, "w") as f:
+                f.write(pyvenv_data.replace("prompt = project-name", f"prompt = {project_name}"))
 
         print("Your project is ready. Deleting myself from existence, farewell!")
         os.remove(__file__)
