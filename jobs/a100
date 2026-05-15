@@ -2,7 +2,7 @@
 #SBATCH --gres=gpu:a100:1
 #SBATCH -p A100
 #SBATCH --time=168:00:00
-#SBATCH --job-name=project_name.a100
+#SBATCH --job-name=package_name.a100
 #SBATCH --cpus-per-task=18
 #SBATCH -o logs/%j/output.log
 #SBATCH --mail-type=ALL
@@ -13,6 +13,6 @@
 source .venv/bin/activate
 
 mkdir -p logs/${SLURM_JOB_ID}/code
-find src/project_name \( -name '*.py' -o -name '*.yaml' \) -exec cp --parents --parents {} logs/${SLURM_JOB_ID}/code/ \;
+find src/package_name \( -name '*.py' -o -name '*.yaml' \) -exec cp --parents --parents {} logs/${SLURM_JOB_ID}/code/ \;
 
-python -B -m project_name hydra.run.dir=logs/${SLURM_JOB_ID}/hydra
+python -B -m package_name hydra.run.dir=logs/${SLURM_JOB_ID}/hydra

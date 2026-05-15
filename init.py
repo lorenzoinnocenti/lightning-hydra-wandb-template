@@ -112,7 +112,7 @@ def main():
             job_path = os.path.join("jobs", job_file)
             with open(job_path) as f:
                 job_data = f.read()
-            job_data = job_data.replace("project_name", project_name)
+            job_data = job_data.replace("project_name", package_name)
             job_data = job_data.replace("YOUR_TELEGRAM_ID", telegram_id)
             with open(job_path, "w") as f:
                 f.write(job_data)
@@ -125,7 +125,7 @@ def main():
         # update package name and dynamic versioning
         print("Renaming package files and folders...")
         rename_package(package_name, root="src")
-        rename_package(package_name, root="tests")
+        # rename_package(package_name, root="tests")
         os.rename("src/project_name", f"src/{package_name}")
         
         # replace project_name in .vscode/launch.json

@@ -11,7 +11,7 @@ srun -p A100 --gres=gpu:a100:1    --mem=20GB --cpus-per-task=8 --time=168:00:00 
 
 
 # main
-srun -p A100 --gres=gpu:a100:1    --job-name=project_name.a1 --cpus-per-task=8 --mem=20G python -B -m project_name
-srun -p A100 --gres=gpu:3g.40gb:1 --job-name=project_name.3g --cpus-per-task=8 --mem=20G python -B -m project_name
-srun -p A100 --gres=gpu:1g.20gb:1 --job-name=project_name.1g --cpus-per-task=8 --mem=20G python -B -m project_name
-srun -p RTX  --gres=gpu:1         --job-name=project_name.rt --cpus-per-task=8 --mem=20G python -B -m project_name
+srun -p A100 --gres=gpu:a100:1    --job-name=package_name.a1 --cpus-per-task=8 --mem=20G python -B -m package_name
+srun -p A100 --gres=gpu:3g.40gb:1 --job-name=package_name.3g --cpus-per-task=8 --mem=20G python -B -m package_name
+srun -p A100 --gres=gpu:1g.20gb:1 --job-name=package_name.1g --cpus-per-task=8 --mem=20G python -B -m package_name
+srun -p RTX  --gres=gpu:1         --job-name=package_name.rt --cpus-per-task=8 --mem=20G python -B -m package_name
